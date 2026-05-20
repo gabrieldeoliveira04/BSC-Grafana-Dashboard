@@ -5,8 +5,8 @@
     "name": "gaqbg8r",
     "namespace": "stacks-1653791",
     "uid": "0976cc0c-30fa-4863-b1c1-7ad9c928e234",
-    "resourceVersion": "2057076375956750779",
-    "generation": 9,
+    "resourceVersion": "2057110024001422177",
+    "generation": 11,
     "creationTimestamp": "2026-05-19T19:30:42Z",
     "labels": {
       "grafana.app/deprecatedInternalID": "3178426406801408"
@@ -16,7 +16,7 @@
       "grafana.app/folder": "",
       "grafana.app/saved-from-ui": "Grafana Cloud",
       "grafana.app/updatedBy": "user:efmk5qbx1n8jkd",
-      "grafana.app/updatedTimestamp": "2026-05-20T12:30:01Z"
+      "grafana.app/updatedTimestamp": "2026-05-20T14:43:43Z"
     }
   },
   "spec": {
@@ -527,19 +527,117 @@
             }
           }
         }
+      },
+      "panel-7": {
+        "kind": "Panel",
+        "spec": {
+          "id": 7,
+          "title": "Recent Wallet Alerts",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afmk6ay3d222oe"
+                      },
+                      "spec": {
+                        "dataset": "bsc_monitor",
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT\r\n\r\ncreated_at,\r\n\r\nCASE\r\n\r\nWHEN wallet_address =\r\n'0xF977814e90dA44bFA03b6295A0616a897441aceC'\r\n\r\nTHEN 'Binance Hot Wallet 8'\r\n\r\nWHEN wallet_address =\r\n'0x28C6c06298d514Db089934071355E5743bf21d60'\r\n\r\nTHEN 'Binance 14'\r\n\r\nWHEN wallet_address =\r\n'0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE'\r\n\r\nTHEN 'Binance 7'\r\n\r\nEND AS wallet,\r\n\r\nROUND(\r\nprevious_balance::numeric,\r\n2\r\n)\r\n\r\nAS previous_balance,\r\n\r\nROUND(\r\ncurrent_balance::numeric,\r\n2\r\n)\r\n\r\nAS current_balance,\r\n\r\nROUND(\r\nvariation_percent::numeric,\r\n2\r\n)\r\n\r\nAS variation_percent\r\n\r\nFROM alerts\r\n\r\nORDER BY created_at DESC",
+                        "sql": {
+                          "columns": [
+                            {
+                              "parameters": [],
+                              "type": "function"
+                            }
+                          ],
+                          "groupBy": [
+                            {
+                              "property": {
+                                "type": "string"
+                              },
+                              "type": "groupBy"
+                            }
+                          ],
+                          "limit": 50
+                        }
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.0-25723336850",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "showHeader": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
       }
     },
     "layout": {
-      "kind": "GridLayout",
+      "kind": "AutoGridLayout",
       "spec": {
+        "maxColumnCount": 3,
+        "columnWidthMode": "standard",
+        "rowHeightMode": "standard",
         "items": [
           {
-            "kind": "GridLayoutItem",
+            "kind": "AutoGridLayoutItem",
             "spec": {
-              "x": 0,
-              "y": 0,
-              "width": 12,
-              "height": 8,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-3"
@@ -547,12 +645,8 @@
             }
           },
           {
-            "kind": "GridLayoutItem",
+            "kind": "AutoGridLayoutItem",
             "spec": {
-              "x": 12,
-              "y": 0,
-              "width": 12,
-              "height": 8,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-4"
@@ -560,12 +654,8 @@
             }
           },
           {
-            "kind": "GridLayoutItem",
+            "kind": "AutoGridLayoutItem",
             "spec": {
-              "x": 0,
-              "y": 8,
-              "width": 12,
-              "height": 8,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-5"
@@ -573,15 +663,20 @@
             }
           },
           {
-            "kind": "GridLayoutItem",
+            "kind": "AutoGridLayoutItem",
             "spec": {
-              "x": 12,
-              "y": 8,
-              "width": 12,
-              "height": 8,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-6"
+              }
+            }
+          },
+          {
+            "kind": "AutoGridLayoutItem",
+            "spec": {
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-7"
               }
             }
           }
