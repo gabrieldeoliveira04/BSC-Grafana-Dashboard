@@ -290,3 +290,42 @@ Motivos:
 - reduz carga sobre a API
 
 ---
+
+### Optional A — Automatic Scheduler
+
+The collector runs automatically every minute using APScheduler.
+
+Flow:
+
+Collector
+↓
+Blockchain query
+↓
+Database update
+↓
+Dashboard auto refresh
+
+No manual execution required.
+
+### Optional B — Alert System
+
+Implemented a wallet balance variation alert system.
+
+Features:
+
+- Detects balance changes above 5%
+- Stores alerts in PostgreSQL
+- Exposes GET /alerts endpoint
+- Dashboard visualization in Grafana
+
+Alert structure:
+
+wallet address
+
+previous balance
+
+current balance
+
+variation percentage
+
+timestamp
