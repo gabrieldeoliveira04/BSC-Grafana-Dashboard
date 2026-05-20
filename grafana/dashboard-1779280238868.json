@@ -5,8 +5,8 @@
     "name": "gaqbg8r",
     "namespace": "stacks-1653791",
     "uid": "0976cc0c-30fa-4863-b1c1-7ad9c928e234",
-    "resourceVersion": "2056823527050313764",
-    "generation": 3,
+    "resourceVersion": "2057076375956750779",
+    "generation": 9,
     "creationTimestamp": "2026-05-19T19:30:42Z",
     "labels": {
       "grafana.app/deprecatedInternalID": "3178426406801408"
@@ -16,7 +16,7 @@
       "grafana.app/folder": "",
       "grafana.app/saved-from-ui": "Grafana Cloud",
       "grafana.app/updatedBy": "user:efmk5qbx1n8jkd",
-      "grafana.app/updatedTimestamp": "2026-05-19T19:45:17Z"
+      "grafana.app/updatedTimestamp": "2026-05-20T12:30:01Z"
     }
   },
   "spec": {
@@ -124,6 +124,7 @@
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "locale",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -173,7 +174,7 @@
                         "editorMode": "code",
                         "format": "table",
                         "rawQuery": true,
-                        "rawSql": "SELECT DISTINCT ON (wallet_address)\r\n\r\n    wallet_address,\r\n\r\n    balance,\r\n\r\n    collected_at\r\n\r\nFROM balances\r\n\r\nORDER BY\r\n    wallet_address,\r\n    collected_at DESC",
+                        "rawSql": "SELECT DISTINCT ON (wallet_address)\r\n\r\nCASE\r\n\r\n    WHEN wallet_address =\r\n    '0xF977814e90dA44bFA03b6295A0616a897441aceC'\r\n\r\n    THEN 'Binance Hot Wallet 8'\r\n\r\n    WHEN wallet_address =\r\n    '0x28C6c06298d514Db089934071355E5743bf21d60'\r\n\r\n    THEN 'Binance 14'\r\n\r\n    WHEN wallet_address =\r\n    '0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE'\r\n\r\n    THEN 'Binance 7'\r\n\r\n    ELSE wallet_address\r\n\r\nEND AS wallet,\r\n\r\nbalance,\r\n\r\ncollected_at\r\n\r\nFROM balances\r\n\r\nORDER BY\r\nwallet_address,\r\ncollected_at DESC",
                         "sql": {
                           "columns": [
                             {
@@ -265,7 +266,7 @@
         "spec": {
           "id": 5,
           "title": "Wallet Balance Variation 24h",
-          "description": "",
+          "description": "Description:\n\nVariation compared to oldest collection within 24h window",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -286,7 +287,7 @@
                         "editorMode": "code",
                         "format": "table",
                         "rawQuery": true,
-                        "rawSql": "WITH latest AS (\r\n\r\n    SELECT DISTINCT ON (wallet_address)\r\n\r\n        wallet_address,\r\n        balance AS latest_balance\r\n\r\n    FROM balances\r\n\r\n    ORDER BY\r\n        wallet_address,\r\n        collected_at DESC\r\n),\r\n\r\noldest AS (\r\n\r\n    SELECT DISTINCT ON (wallet_address)\r\n\r\n        wallet_address,\r\n        balance AS oldest_balance\r\n\r\n    FROM balances\r\n\r\n    WHERE collected_at >= NOW() - INTERVAL '24 hours'\r\n\r\n    ORDER BY\r\n        wallet_address,\r\n        collected_at ASC\r\n)\r\n\r\nSELECT\r\n\r\n    latest.wallet_address,\r\n\r\n    ROUND(\r\n\r\n        (\r\n            (\r\n                (\r\n                    latest.latest_balance\r\n                    -\r\n                    oldest.oldest_balance\r\n                )\r\n\r\n                /\r\n\r\n                NULLIF(\r\n                    oldest.oldest_balance,\r\n                    0\r\n                )\r\n\r\n            ) * 100\r\n        )::numeric,\r\n\r\n        2\r\n\r\n    ) AS variation_percent\r\n\r\nFROM latest\r\n\r\nJOIN oldest\r\n\r\nON latest.wallet_address =\r\noldest.wallet_address",
+                        "rawSql": "WITH latest AS (\r\n\r\n    SELECT DISTINCT ON (wallet_address)\r\n\r\n        wallet_address,\r\n        balance AS latest_balance\r\n\r\n    FROM balances\r\n\r\n    ORDER BY\r\n        wallet_address,\r\n        collected_at DESC\r\n),\r\n\r\noldest AS (\r\n\r\n    SELECT DISTINCT ON (wallet_address)\r\n\r\n        wallet_address,\r\n        balance AS oldest_balance\r\n\r\n    FROM balances\r\n\r\n    WHERE collected_at >= NOW() - INTERVAL '24 hours'\r\n\r\n    ORDER BY\r\n        wallet_address,\r\n        collected_at ASC\r\n)\r\n\r\nSELECT\r\n\r\nCASE\r\n\r\n    WHEN latest.wallet_address =\r\n    '0xF977814e90dA44bFA03b6295A0616a897441aceC'\r\n\r\n    THEN 'Binance Hot Wallet 8'\r\n\r\n    WHEN latest.wallet_address =\r\n    '0x28C6c06298d514Db089934071355E5743bf21d60'\r\n\r\n    THEN 'Binance 14'\r\n\r\n    WHEN latest.wallet_address =\r\n    '0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE'\r\n\r\n    THEN 'Binance 7'\r\n\r\nEND AS wallet,\r\n\r\nROUND(\r\n\r\n    LEAST(\r\n\r\n        ABS(\r\n            (\r\n                (\r\n                    latest.latest_balance\r\n                    -\r\n                    oldest.oldest_balance\r\n                )\r\n\r\n                /\r\n\r\n                NULLIF(\r\n                    oldest.oldest_balance,\r\n                    1\r\n                )\r\n\r\n            ) *100\r\n        ),\r\n\r\n        100\r\n\r\n    )::numeric,\r\n\r\n    2\r\n\r\n) AS variation_percent\r\n\r\nFROM latest\r\n\r\nJOIN oldest\r\n\r\nON latest.wallet_address =\r\noldest.wallet_address",
                         "sql": {
                           "columns": [
                             {
@@ -415,7 +416,7 @@
                         "editorMode": "code",
                         "format": "time_series",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n    collected_at AS time,\r\n    balance,\r\n    wallet_address\r\nFROM balances\r\nORDER BY collected_at",
+                        "rawSql": "SELECT\r\n    collected_at AS time,\r\n    balance AS value,\r\n\r\nCASE\r\n\r\nWHEN wallet_address =\r\n'0xF977814e90dA44bFA03b6295A0616a897441aceC'\r\nTHEN 'Binance Hot Wallet 8'\r\n\r\nWHEN wallet_address =\r\n'0x28C6c06298d514Db089934071355E5743bf21d60'\r\nTHEN 'Binance 14'\r\n\r\nWHEN wallet_address =\r\n'0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE'\r\nTHEN 'Binance 7'\r\n\r\nEND AS metric\r\nFROM balances\r\nORDER BY time",
                         "sql": {
                           "columns": [
                             {
@@ -502,11 +503,12 @@
                       "viz": false
                     },
                     "insertNulls": false,
-                    "lineInterpolation": "linear",
+                    "lineInterpolation": "smooth",
                     "lineWidth": 1,
                     "pointSize": 5,
                     "scaleDistribution": {
-                      "type": "linear"
+                      "log": 2,
+                      "type": "log"
                     },
                     "showPoints": "auto",
                     "showValues": false,
